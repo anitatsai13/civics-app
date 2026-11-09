@@ -22,7 +22,7 @@ units.forEach(u => {
   const parts = u.ps.map(p => ({ w: where + ' 重點' + p.n + '「' + p.t + '」', h: p.c || '' }));
   if (u.mem) parts.push({ w: where + ' 會考大解密／名詞', h: u.mem });
   parts.forEach(({ w, h }) => {
-    if (!h) { E.push(w + '：內容待補'); return; }
+    if (!h) { (typeof u.n === 'number' ? E : W).push(w + '：內容待補'); return; }
     // 排版規則 1：除法用分數
     (h.replace(/<[^>]+>/g, '').match(/.{0,12}÷.{0,12}/g) || []).forEach(m => W.push(w + '：出現 ÷（應改分數，除非書上就印 ÷）→ ' + m));
     // 排版規則 2：用文字描述圖

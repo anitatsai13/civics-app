@@ -98,8 +98,9 @@ groups.forEach(g => {
       ng(g.name + '／' + u.t + '：重點編號不連續 → ' + ns.join(','));
     if (u.ov !== undefined && u.ov > u.ps[0].p) ng(g.name + '／' + u.t + '：綜覽圖頁碼晚於重點1');
   });
+  /* 頁碼在「同一冊」內遞增即可（公民的圖解公民、關鍵概念彙整別冊各有自己的頁碼） */
   let prev = 0; const bads = [];
-  pages.forEach(x => { if (x.p < prev) bads.push(x.u + ' 重點' + x.n + '（p.' + x.p + '）'); prev = x.p; });
+  g.vols.forEach(v => { let pv = 0; v.us.forEach(u => u.ps.forEach(p => { if (p.p < pv) bads.push(u.t + ' 重點' + p.n + '（p.' + p.p + '）'); pv = p.p; prev = p.p; })); });
   if (bads.length) ng(g.name + '：頁碼未遞增 → ' + bads.join('、'));
   const want = Array.from({ length: unums.length }, (_, i) => i + unums[0]);
   if (JSON.stringify(unums) !== JSON.stringify(want)) ng(g.name + '：單元編號異常 → ' + unums.join(','));
