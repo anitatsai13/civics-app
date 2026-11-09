@@ -261,6 +261,10 @@ img.gi{display:inline-block;max-height:88px;max-width:160px;vertical-align:middl
 footer{text-align:center;color:var(--muted);font-size:.75rem;margin-top:34px;letter-spacing:.05em}
 @media(max-width:520px){header h1{font-size:1.25rem}.unit{padding:8px 12px;font-size:.9rem}}
 .qf{margin:8px 0}.qf .fig{margin:0}.qfo{display:inline-block;vertical-align:middle;background:#fff;border-radius:6px}.qfo svg{display:block;max-width:100%;height:auto}
+  #secChips .chip.qvol{flex-basis:100%;justify-content:center;font-weight:800;margin-top:10px;background:var(--brand,#2c7a4b);color:#fff;border-color:transparent;opacity:.75}
+  #secChips .chip.qvol.active{opacity:1;box-shadow:0 0 0 2px #fff inset}
+  #secChips .chip.qunit{flex-basis:100%;justify-content:flex-start;font-weight:800;margin-top:6px}
+  #secChips{flex-wrap:wrap}
   .ill{display:inline-block;font-size:.86em;background:#f6f1e9;border:1px dashed #c9b8a6;border-radius:6px;padding:0 7px;margin:2px;color:#6b5a4a;line-height:1.6}
   @media (max-width:640px){.fig{overflow-x:auto;-webkit-overflow-scrolling:touch}.fig svg[width]{max-width:none}.qfo .fig svg[width],.figrow .fig svg[width]{max-width:100%}.fig .mt,.fig .cap{position:sticky;left:0}}
 </style>
@@ -1018,13 +1022,13 @@ const M12="<h3 class=\"sub\"><span class=\"kp\">會考</span>會考大解密</h3
 const SUBJECTS=[
 {k:"civ",name:"公民",icon:"⚖️",color:"#b5562b",vols:[
 {name:"圖解公民",us:[
- {n:"圖解",t:"圖解公民",ps:[
+ {n:"圖解",t:"圖解公民",noq:1,ps:[
   {n:1,t:"不同政府機關間的互動",p:5,tg:[],c:TJ1},
   {n:2,t:"不同機關職權的比較",p:5,tg:[],c:TJ2},
   {n:3,t:"民/刑法、政治參與、兒少權益相關法律的年齡軸",p:6,tg:[],c:TJ3},
   {n:4,t:"婚姻年齡、少年事件、行為能力與責任能力差異",p:6,tg:[],c:TJ4}]}]},
 {name:"關鍵概念彙整",us:[
- {n:"主題一",t:"公民身分與社群",ps:[
+ {n:"主題一",t:"公民身分與社群",noq:1,ps:[
   {n:1,t:"國民、公民與移民",p:2,tg:[],c:K1_1},
   {n:2,t:"人性尊嚴與人權",p:2,tg:[],c:K1_2},
   {n:3,t:"性別觀念",p:2,tg:[],c:K1_3},
@@ -1037,7 +1041,7 @@ const SUBJECTS=[
   {n:10,t:"權宜問題與秩序問題",p:2,tg:[],c:K1_10},
   {n:11,t:"原住民部落的重要性",p:2,tg:[],c:K1_11},
   {n:12,t:"原住民部落的挑戰與作為",p:2,tg:[],c:K1_12}]},
- {n:"主題二",t:"公民的社會參與",ps:[
+ {n:"主題二",t:"公民的社會參與",noq:1,ps:[
   {n:1,t:"文化的特性",p:6,tg:[],c:K2_1},
   {n:2,t:"主流文化與次文化",p:6,tg:[],c:K2_2},
   {n:3,t:"強勢文化與弱勢文化",p:6,tg:[],c:K2_3},
@@ -1050,7 +1054,7 @@ const SUBJECTS=[
   {n:10,t:"不公平現象的探討",p:6,tg:[],c:K2_10},
   {n:11,t:"追求公平正義",p:6,tg:[],c:K2_11},
   {n:12,t:"我國社會福利制度現況",p:6,tg:[],c:K2_12}]},
- {n:"主題三",t:"憲政精神與政治參與",ps:[
+ {n:"主題三",t:"憲政精神與政治參與",noq:1,ps:[
   {n:1,t:"國家構成要素",p:10,tg:[],c:K3_1},
   {n:2,t:"法律位階",p:10,tg:[],c:K3_2},
   {n:3,t:"憲法的特性",p:10,tg:[],c:K3_3},
@@ -1063,7 +1067,7 @@ const SUBJECTS=[
   {n:10,t:"地方自治團體三層級",p:10,tg:[],c:null},
   {n:11,t:"選舉權、被選舉權與公民投票權",p:10,tg:[],c:K3_11},
   {n:12,t:"選舉與投票",p:10,tg:[],c:K3_12}]},
- {n:"主題四",t:"法律生活與權利救濟",ps:[
+ {n:"主題四",t:"法律生活與權利救濟",noq:1,ps:[
   {n:1,t:"民法的重要原則",p:16,tg:[],c:K4_1},
   {n:2,t:"行為能力",p:16,tg:[],c:K4_2},
   {n:3,t:"債務不履行與侵權行為",p:16,tg:[],c:K4_3},
@@ -1079,7 +1083,7 @@ const SUBJECTS=[
   {n:13,t:"行政救濟",p:16,tg:[],c:K4_13},
   {n:14,t:"少年保護事件與少年刑事案件",p:16,tg:[],c:K4_14},
   {n:15,t:"少年保護事件之保護處分",p:16,tg:[],c:K4_15}]},
- {n:"主題五",t:"經濟生活的運作",ps:[
+ {n:"主題五",t:"經濟生活的運作",noq:1,ps:[
   {n:1,t:"機會成本",p:21,tg:[],c:K5_1},
   {n:2,t:"誘因",p:21,tg:[],c:K5_2},
   {n:3,t:"價格變動對消費者與生產者的影響",p:21,tg:[],c:K5_3},
@@ -1094,7 +1098,7 @@ const SUBJECTS=[
   {n:12,t:"國際分工",p:21,tg:[],c:K5_12},
   {n:13,t:"國際貿易",p:21,tg:[],c:K5_13},
   {n:14,t:"匯率變動（以美元兌換新臺幣的匯率為例）",p:21,tg:[],c:K5_14}]},
- {n:"主題六",t:"科技發展與全球化",ps:[
+ {n:"主題六",t:"科技發展與全球化",noq:1,ps:[
   {n:1,t:"資訊科技的影響",p:25,tg:[],c:K6_1},
   {n:2,t:"智慧財產權三法",p:25,tg:[],c:K6_2},
   {n:3,t:"全球化",p:25,tg:[],c:K6_3}]}]},
@@ -1228,7 +1232,7 @@ function renderUnits(){
     if(UNITS[k].color) b.style.setProperty("--sub-c",UNITS[k].color);
     b.onclick=()=>{
       if(unit===k){tocOpen=!tocOpen;renderUnits();renderToc();return;}
-      unit=k;secSel="all";diffSel="all";tocOpen=true;qQuit();
+      unit=k;secSel="all";QSEL.clear();diffSel="all";tocOpen=true;qQuit();
       renderUnits();renderLearn();renderChips();renderList();renderToc();
     };
     box.appendChild(b);
@@ -1294,8 +1298,69 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
 
 /* ===== 測驗 ===== */
 let secSel="all", diffSel="all", QZ=null;
+
+/* ===== 測驗範圍：冊 → 單元 → 重點 複選（比照英文文法網）=====
+   QSEL＝選取的「單元id|重點」；空集合＝全部（或沿用 secSel，給「學習進度 → 練習這個單元」用）。
+   題目歸到哪個單元的規則同 pgIndex：重點名稱唯一就直接對應；同名重點（如「實驗整理」）依 PG_SECALIAS 或前一題所在單元；
+   重點名稱不在任何單元裡的（公民的會考模擬試題）歸到最後的「其他」。 */
+var QSEL=new Set(), _qTree={};
+function qTree(){
+  if(_qTree[unit])return _qTree[unit];
+  const sj=SUBJECTS.find(s=>s.k===unit), al=PG_SECALIAS[unit]||{};
+  const T={vols:[],other:[],map:new Map()}, bySec={}, byN={}, items={};
+  sj.vols.forEach(v=>{const V={name:v.name,units:[]};T.vols.push(V);
+    v.us.forEach(u=>{const U={id:String(u.n),u:u,keys:[]};V.units.push(U);byN[U.id]=U;
+      if(!u.noq)u.ps.forEach(p=>{(bySec[p.t]=bySec[p.t]||[]).push(U);});});});
+  let prev=null;
+  bank().forEach(q=>{
+    const c=bySec[q.sec]||[];
+    let U=c.length===1?c[0]:(al[q.sec]!=null?byN[String(al[q.sec])]:null);
+    if(!U&&c.length>1)U=(prev&&c.indexOf(prev)>=0)?prev:c[0];
+    const key=U?U.id+"|"+q.sec:"x|"+q.sec;
+    if(U)prev=U;
+    T.map.set(q,key);
+    if(!items[key]){items[key]={key:key,sec:q.sec,n:0};(U?U.keys:T.other).push(items[key]);}
+    items[key].n++;
+  });
+  /* 單元內依課本重點順序排 */
+  T.vols.forEach(V=>V.units.forEach(U=>{const ord=U.u.ps.map(p=>p.t);U.keys.sort((a,b)=>{const x=ord.indexOf(a.sec),y=ord.indexOf(b.sec);return (x<0?99:x)-(y<0?99:y);});}));
+  return _qTree[unit]=T;
+}
+function qSelKey(q){return qTree().map.get(q);}
+function qSelTag(){return QSEL.size?[...QSEL].sort().join("+"):secSel;}
+function qSelName(){
+  if(!QSEL.size)return secSel==="all"?"全部":secSel;
+  const T=qTree(),ks=[...QSEL];
+  if(ks.length===1)return ks[0].split("|").slice(1).join("|");
+  return "自選 "+ks.length+" 項";
+}
+function renderScope(qs){
+  const box=$("#secChips");box.innerHTML="";
+  let T;try{T=qTree();}catch(e){setTimeout(()=>{renderChips();renderList();},0);return;}
+  const mk=(cls,active,label,fn,title)=>{const b=document.createElement("button");
+    b.className="chip"+(cls?" "+cls:"")+(active?" active":"");b.textContent=label;if(title)b.title=title;
+    b.onclick=()=>{secSel="all";fn();renderChips();renderList();};box.appendChild(b);return b;};
+  const toggle=keys=>{const on=keys.length&&keys.every(k=>QSEL.has(k.key));keys.forEach(k=>{if(on)QSEL.delete(k.key);else QSEL.add(k.key);});};
+  const sum=keys=>keys.reduce((n,k)=>n+k.n,0);
+  mk("",!QSEL.size&&secSel==="all","全部（"+qs.length+" 題）",()=>QSEL.clear());
+  const multiVol=T.vols.filter(V=>V.units.some(U=>U.keys.length)).length>1;
+  T.vols.forEach(V=>{
+    const vk=V.units.flatMap(U=>U.keys);if(!vk.length)return;
+    if(multiVol)mk("qvol",vk.every(k=>QSEL.has(k.key)),"📚 "+V.name+"　"+sum(vk)+" 題",()=>toggle(vk),"選取／取消整個"+V.name);
+    V.units.forEach(U=>{if(!U.keys.length)return;
+      const lab=(typeof U.u.n==="number"?"第 "+U.u.n+" 單元":U.u.n)+"　"+U.u.t;
+      mk("qunit",U.keys.every(k=>QSEL.has(k.key)),lab+"　"+sum(U.keys)+" 題",()=>toggle(U.keys),"選取／取消整個單元");
+      if(U.keys.length>1||U.keys[0].sec!==U.u.t)U.keys.forEach(k=>mk("",QSEL.has(k.key),k.sec+"（"+k.n+"）",()=>toggle([k])));
+    });
+  });
+  if(T.other.length){
+    mk("qvol",T.other.every(k=>QSEL.has(k.key)),"📝 其他　"+sum(T.other)+" 題",()=>toggle(T.other));
+    T.other.forEach(k=>mk("",QSEL.has(k.key),k.sec+"（"+k.n+"）",()=>toggle([k])));
+  }
+}
+
 const bank=()=>UNITS[unit].qs;
-const pool=()=>bank().filter(q=>(secSel==="all"||q.sec===secSel)&&(diffSel==="all"||q.diff===diffSel));
+const pool=()=>bank().filter(q=>(QSEL.size?QSEL.has(qSelKey(q)):(secSel==="all"||q.sec===secSel))&&(diffSel==="all"||q.diff===diffSel));
 function chips(box,cur,items,fn){
   const b=$(box);b.innerHTML="";
   items.forEach(it=>{const c=document.createElement("button");c.className="chip"+(cur===it.v?" active":"");
@@ -1311,18 +1376,14 @@ function renderChips(){
     return;
   }
   $("#startBtn").style.display="";
-  const secs=[...new Set(qs.map(q=>q.sec))];
-  if(secs.length>1){
-    chips("#secChips",secSel,[{v:"all",t:"全部（"+qs.length+" 題）"}]
-      .concat(secs.map(s=>({v:s,t:s+"（"+cnt(q=>q.sec===s)+"）"}))),v=>{secSel=v;});
-  }else{$("#secChips").innerHTML="";secSel="all";}
+  renderScope(qs);
   const diffs=["易","中","難"].filter(d=>cnt(q=>q.diff===d)>0);
   if(diffs.length){
     chips("#diffChips",diffSel,[{v:"all",t:"所有難度"}]
       .concat(diffs.map(d=>({v:d,t:d+"（"+cnt(q=>q.diff===d)+"）"}))),v=>{diffSel=v;});
   }else{$("#diffChips").innerHTML="";diffSel="all";}
   $("#startBtn").textContent="📝 開始測驗（"+pool().length+" 題）";
-  let best=0;try{best=+localStorage.getItem("civ_best_"+unit+"_"+secSel+"_"+diffSel)||0;}catch(e){}
+  let best=0;try{best=+localStorage.getItem("civ_best_"+unit+"_"+qSelTag()+"_"+diffSel)||0;}catch(e){}
   $("#poolStat").textContent=best?("此範圍最佳答對率 "+best+"%"):"";
   if(QZ)qQuit();
   renderRand();
@@ -1354,7 +1415,7 @@ function renderRand(){const box=$("#randBox");if(!box)return;const arr=pool();if
 function qStart(list,label,keep){
   newRound();
   const P=progLoad();
-  QZ={P:P,list:keep?list.slice():list?shuffle(list.slice()):qPrio(pool().slice(),P),i:0,score:0,wrong:[],full:!list,u:unit,scope:secSel+"_"+diffSel,label:label||"",src:label?list:null};
+  QZ={P:P,list:keep?list.slice():list?shuffle(list.slice()):qPrio(pool().slice(),P),i:0,score:0,wrong:[],full:!list,u:unit,scope:qSelTag()+"_"+diffSel,label:label||"",src:label?list:null};
   if(!QZ.list.length){alert("此範圍沒有題目。");QZ=null;return;}
   $("#qlist").style.display="none";$("#startBtn").style.display="none";$("#randBox").style.display="none";
   qRender();
@@ -1498,7 +1559,7 @@ function logMistake(q,chosen){
 function logRound(n,score,pct){
   const a=loadL();
   a.push({t:quizRound||new Date().toISOString(),sub:unit,subName:UNITS[unit].name,
-    scope:(QZ&&QZ.label)?QZ.label+"｜不限難度":(secSel==="all"?"\u5168\u90e8":secSel)+"\uff5c"+(diffSel==="all"?"\u4e0d\u9650\u96e3\u5ea6":diffSel),
+    scope:(QZ&&QZ.label)?QZ.label+"｜不限難度":qSelName()+"\uff5c"+(diffSel==="all"?"\u4e0d\u9650\u96e3\u5ea6":diffSel),
     n:n,score:score,pct:pct});
   saveL(a);cloudMirror();
 }
@@ -1567,7 +1628,7 @@ window.wRetest=function(k){
   /* 每筆錯題用 qFind 找回「當初那一題」（題目 key＋重點＋當時的正解），同一題只出一次；找不到的略過 */
   const rc=wRetestPool(k), pool=rc.pool;
   if(!pool.length)return alert("\u9019\u4e9b\u932f\u984c\u5c0d\u61c9\u4e0d\u5230\u73fe\u6709\u984c\u76ee\u3002");
-  if(unit!==k){unit=k;secSel="all";diffSel="all";tocOpen=false;renderUnits();renderLearn();renderChips();renderList();renderToc();}
+  if(unit!==k){unit=k;secSel="all";QSEL.clear();diffSel="all";tocOpen=false;renderUnits();renderLearn();renderChips();renderList();renderToc();}
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
   document.querySelector('.tab[data-tab="quiz"]').classList.add("active");
   document.querySelectorAll(".pane").forEach(p=>p.classList.remove("show"));
@@ -1698,7 +1759,7 @@ function pgIndex(){
     sj.vols.forEach(v=>v.us.forEach(u=>{
       const o={g:sj.k+":"+v.name,id:String(u.n),u:u,vol:v.name,items:[]};
       byN[o.id]=o;X.units.push(o);
-      u.ps.forEach(p=>{(bySec[p.t]=bySec[p.t]||[]).push(o);});
+      if(!u.noq)u.ps.forEach(p=>{(bySec[p.t]=bySec[p.t]||[]).push(o);});
     }));
     const al=PG_SECALIAS[sj.k]||{};
     let prev=null;
@@ -1769,7 +1830,7 @@ function pgOldBest(o){
       該次錯題本裡有的算錯、其餘算對（時間＝該次測驗）。
       題數不符（題庫後來改過）→ 不推逐題，只算該重點所在單元「練習過」（舊紀錄 m 次・最佳 x%）。
    3. nat_best_*（沒有時間）：只當「練習過」的證據（見 pgOldBest）。 */
-const PG_SINCE=Date.parse("2026-11-09T14:45:40Z");
+const PG_SINCE=Date.parse("2026-11-09T14:56:30Z");
 function pgBefore(t){const v=Date.parse(t);return !isNaN(v)&&v<PG_SINCE;}
 function pgLegacy(){
   const I=pgIndex(),L={},ev={},stat={mis:0,logs:0,whole:0};
@@ -1843,7 +1904,7 @@ function pgPractice(o){
   if(unit!==sub){unit=sub;tocOpen=false;renderUnits();renderLearn();renderToc();}
   const secs=[...new Set(qs.map(q=>q.sec))];
   const one=secs.length===1&&bank().filter(q=>q.sec===secs[0]).length===qs.length;
-  secSel=one?secs[0]:"all";diffSel="all";
+  QSEL.clear();secSel=one?secs[0]:"all";diffSel="all";
   renderChips();renderList();
   const t=document.querySelector('.tab[data-tab="quiz"]');if(t)t.click();
   if(one)qStart();else qStart(qs,pgUnitLabel(o));
@@ -1948,7 +2009,7 @@ renderWrong();renderLog();
   }
 
   function jump(unitKey,secText){
-    if(unit!==unitKey){unit=unitKey;secSel="all";diffSel="all";qQuit();renderUnits();renderLearn();renderChips();renderList();}
+    if(unit!==unitKey){unit=unitKey;secSel="all";QSEL.clear();diffSel="all";qQuit();renderUnits();renderLearn();renderChips();renderList();}
     tocOpen=false;renderUnits();renderToc();
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
     const lt=document.querySelector('.tab[data-tab="learn"]'); if(lt)lt.classList.add("active");
