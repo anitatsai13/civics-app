@@ -1399,18 +1399,20 @@ function renderList(){
   ).join("");
 }
 window.tglA=function(btn){btn.nextElementSibling.classList.toggle("show");};
-/* 選題優先順序（比照英文 App）：① 沒做過 → ② 答錯次數多的先 → ③ 答對次數多的最後；同次數隨機。
+/* 選題優先順序（比照英文 App）：① 沒做過 → ② 答錯還沒訂正的（錯越多越先）→ ③ 答對過的（答對越少、越久沒練的先）；再隨機。
    「開始測驗」整個範圍與「隨機 N 題」照這個順序；錯題重測、再測一次（指定題目清單）照舊打亂。 */
 var PG_READY=false;/* 學習進度索引（PG_IDX）在程式後段才宣告；載入完成前一律當作沒做過，載入後由 renderRand 重算 */
 function qTier(q,P){if(!PG_READY)return {n:0,ok:0,bad:0,tier:0};const X=pgIndex()[unit],k=qKey(q),h=X&&X.byKey[k],r=h&&((P[h.o.g+"|"+h.o.id]||{}).q||{})[k];
-  const n=r?r[0]||0:0,ok=r?r[1]||0:0,bad=Math.max(0,n-ok);return {n:n,ok:ok,bad:bad,tier:!n?0:bad?1:2};}
-function qPrio(arr,P){return arr.map(q=>({q:q,s:qTier(q,P),r:Math.random()})).sort((x,y)=>(x.s.tier-y.s.tier)||(y.s.bad-x.s.bad)||(x.s.ok-y.s.ok)||(x.r-y.r)).map(x=>x.q);}
+  const n=r?r[0]||0:0,ok=r?r[1]||0:0,bad=Math.max(0,n-ok),last=r?r[2]||"":"";
+  /* r＝[作答次數,答對次數,最後作答,最後答對]：最後一次答對（r[3]≥r[2]）就算已訂正；舊版錯過一次就永遠排前面，每輪抽到同一批（2026-11-17 修正） */
+  const fixed=bad&&r&&r[3]&&r[3]>=r[2];return {n:n,ok:ok,bad:bad,last:last,tier:!n?0:(bad&&!fixed)?1:2};}
+function qPrio(arr,P){return arr.map(q=>({q:q,s:qTier(q,P),r:Math.random()})).sort((x,y)=>(x.s.tier-y.s.tier)||(x.s.tier===1?(y.s.bad-x.s.bad):0)||(x.s.ok-y.s.ok)||(x.s.last<y.s.last?-1:x.s.last>y.s.last?1:0)||(x.r-y.r)).map(x=>x.q);}
 function qTag(q){const s=qTier(q,QZ.P);return !s.n?"🆕 沒做過":s.bad?"❌ 錯過 "+s.bad+" 次"+(s.ok?"・對 "+s.ok+" 次":""):"✅ 答對過 "+s.ok+" 次";}
 function qRand(n){const P=progLoad();qStart(qPrio(pool(),P).slice(0,n),"🎲 隨機 "+n+" 題",true);}
 function renderRand(){const box=$("#randBox");if(!box)return;const arr=pool();if(!arr.length){box.innerHTML="";return;}
   const P=progLoad(),c=[0,0,0];arr.forEach(q=>c[qTier(q,P).tier]++);
   box.innerHTML=[10,20,30].map(n=>'<button class="btn ghost sm" data-rn="'+n+'">🎲 隨機 '+n+' 題</button>').join(" ")+
-    '<div class="stat" style="margin-top:6px">出題順序：沒做過 '+c[0]+' 題 → 答錯過 '+c[1]+' 題（錯越多越先）→ 只答對過 '+c[2]+' 題（答對越多越後面）</div>';
+    '<div class="stat" style="margin-top:6px">出題順序：沒做過 '+c[0]+' 題 → 答錯還沒訂正 '+c[1]+' 題（錯越多越先）→ 答對過 '+c[2]+' 題（答對越少、越久沒練的先）</div>';
   box.querySelectorAll("[data-rn]").forEach(b=>b.onclick=()=>qRand(+b.dataset.rn));}
 function qStart(list,label,keep){
   newRound();
@@ -1440,7 +1442,7 @@ function qChoose(btn,q){
   document.querySelectorAll("#quizBox .eopt").forEach(x=>x.onclick=null);
   document.querySelectorAll("#quizBox .eopt")[q.ans].classList.add("correct");
   if(!ok)btn.classList.add("wrong");
-  if(ok)QZ.score++;else{QZ.wrong.push(q);try{logMistake(q,k)}catch(e){console.warn("logMistake",e)}}
+  if(ok){QZ.score++;try{wHit(q)}catch(e){console.warn("wHit",e)}}else{QZ.wrong.push(q);try{logMistake(q,k)}catch(e){console.warn("logMistake",e)}}
   try{progQ(QZ.u,q,ok)}catch(e){console.warn("progLog",e)}
   const e=$("#quizBox .expl");
   let s='<span class="lbl">'+(ok?"✅ 答對了":"❌ 正解")+'</span>（'+"ＡＢＣＤ"[q.ans]+'）'+rep(q.opts[q.ans],false);
@@ -1513,25 +1515,28 @@ async function authOK(){if(!SESSION)return false;if(SESSION.expires_at-Date.now(
 async function cloudLoadApp(app){if(!await authOK())return null;const j=await sb("/rest/v1/mistakes?select=data&user_id=eq."+SESSION.user.id+"&app=eq."+app);return (j&&j[0]&&j[0].data)||[];}
 async function cloudSaveApp(app,arr){if(!await authOK())return;await sb("/rest/v1/mistakes?on_conflict=user_id,app",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify({user_id:SESSION.user.id,app:app,data:arr,updated_at:new Date().toISOString()})});}
 
-function loadM(){try{return JSON.parse(localStorage.getItem(MKEY)||"[]")}catch(e){return []}}
-function saveM(a){try{localStorage.setItem(MKEY,JSON.stringify(a))}catch(e){}}
+/* done＝同一題連續答對 W_NEED 次、已移出錯題本；記錄保留在陣列裡當刪除標記，雲端合併時才不會被其他裝置的舊資料加回來 */
+function loadMAll(){try{return JSON.parse(localStorage.getItem(MKEY)||"[]")}catch(e){return []}}
+function saveMAll(a){try{localStorage.setItem(MKEY,JSON.stringify(a))}catch(e){}}
+function loadM(){return loadMAll().filter(r=>!r.done);}
+function saveM(a){const ks=new Set(a.map(mKey));saveMAll(a.concat(loadMAll().filter(r=>r.done&&!ks.has(mKey(r)))));}
 function loadL(){try{return JSON.parse(localStorage.getItem(LKEY)||"[]")}catch(e){return []}}
 function saveL(a){try{localStorage.setItem(LKEY,JSON.stringify(a))}catch(e){}}
 const mKey=r=>(r.sub||"")+"|"+(r.round||"")+"|"+(r.qk||"");
 const lKey=r=>(r.t||"");
-function mergeBy(fn,a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(r=>m.set(fn(r),r));return [...m.values()];}
+function mergeBy(fn,a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(r=>{const k=fn(r),o=m.get(k);if(o&&o.done&&!r.done)return;m.set(k,r);});return [...m.values()];}
 
 async function syncDown(){
   if(!CLOUD||!loggedIn())return;
   try{
     const cm=await cloudLoadApp(APP_M), cl=await cloudLoadApp(APP_L);
-    const mm=mergeBy(mKey,loadM(),cm), ml=mergeBy(lKey,loadL(),cl);
-    saveM(mm);saveL(ml);
+    const mm=mergeBy(mKey,loadMAll(),cm), ml=mergeBy(lKey,loadL(),cl);
+    saveMAll(mm);saveL(ml);
     await cloudSaveApp(APP_M,mm);await cloudSaveApp(APP_L,ml);
   }catch(e){console.warn("sync",e)}
   await progSyncDown();
 }
-function cloudMirror(){if(CLOUD&&loggedIn()){cloudSaveApp(APP_M,loadM()).catch(()=>{});cloudSaveApp(APP_L,loadL()).catch(()=>{});}}
+function cloudMirror(){if(CLOUD&&loggedIn()){cloudSaveApp(APP_M,loadMAll()).catch(()=>{});cloudSaveApp(APP_L,loadL()).catch(()=>{});}}
 
 /* 由「重點名稱」反查所屬冊／單元 */
 let SEC_MAP=null;
@@ -1554,8 +1559,23 @@ function logMistake(q,chosen){
     correct:"\uff08"+"\uff21\uff22\uff23\uff24"[q.ans]+"\uff09"+q.opts[q.ans],
     chosen:"\uff08"+"\uff21\uff22\uff23\uff24"[chosen]+"\uff09"+q.opts[chosen],
     t:new Date().toISOString(),round:quizRound||new Date().toISOString()};
-  const a=loadM();a.push(rec);saveM(a);cloudMirror();
+  const a=loadMAll();a.forEach(b=>{if(!b.done&&b.hits&&b.sub===unit&&qFind(b)===q)b.hits=0;});a.push(rec);saveMAll(a);cloudMirror();
 }
+/* 錯題答對計數：同一題連續答對 W_NEED 次就移出錯題本；中途答錯會歸零重算 */
+const W_NEED=3;
+function wHit(q){
+  const a=loadMAll(),hit=a.filter(b=>!b.done&&b.sub===unit&&qFind(b)===q);
+  if(!hit.length)return;
+  const n=Math.max(...hit.map(b=>b.hits||0))+1,d=new Date().toISOString();
+  hit.forEach(b=>{b.hits=n;if(n>=W_NEED)b.done=d;});
+  saveMAll(a);cloudMirror();
+  wToast(n>=W_NEED?"🎉 這題連續答對 "+W_NEED+" 次，移出錯題本！":"👍 錯題答對 "+n+"／"+W_NEED+"（連續答對 "+W_NEED+" 次就移出錯題本）");
+}
+function wToast(s){let d=document.getElementById("wToast");
+  if(!d){d=document.createElement("div");d.id="wToast";
+    d.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(34,34,34,.92);color:#fff;padding:10px 16px;border-radius:12px;font-weight:800;z-index:9999;max-width:90vw;text-align:center;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:opacity .3s";
+    document.body.appendChild(d);}
+  d.textContent=s;d.style.opacity="1";clearTimeout(d._t);d._t=setTimeout(()=>{d.style.opacity="0";},2200);}
 function logRound(n,score,pct){
   const a=loadL();
   a.push({t:quizRound||new Date().toISOString(),sub:unit,subName:UNITS[unit].name,
@@ -1603,7 +1623,7 @@ let wSub="all";
 window.wSetSub=function(k){wSub=k;renderWrong();};
 window.wClear=function(){
   if(!confirm("\u78ba\u5b9a\u6e05\u7a7a\u6240\u6709\u932f\u984c\uff1f"))return;
-  saveM([]);if(CLOUD&&loggedIn())cloudSaveApp(APP_M,[]).catch(()=>{});renderWrong();
+  const d=new Date().toISOString();saveMAll(loadMAll().map(r=>{if(!r.done)r.done=d;return r;}));cloudMirror();renderWrong();
 };
 window.wExport=function(){
   const blob=new Blob([JSON.stringify({mistakes:loadM(),log:loadL()},null,1)],{type:"application/json"});
@@ -1616,7 +1636,7 @@ window.wImport=function(){
     const f=i.files[0];if(!f)return;const rd=new FileReader();
     rd.onload=function(){try{
       const j=JSON.parse(rd.result);
-      saveM(mergeBy(mKey,loadM(),j.mistakes||(Array.isArray(j)?j:[])));
+      saveMAll(mergeBy(mKey,loadMAll(),j.mistakes||(Array.isArray(j)?j:[])));
       saveL(mergeBy(lKey,loadL(),j.log||[]));
       cloudMirror();renderWrong();renderLog();
     }catch(e){alert("\u532f\u5165\u5931\u6557\uff1a"+e.message)}};
@@ -1650,6 +1670,7 @@ function renderWrong(){
     host.innerHTML=h+'<p class="stat" style="margin-top:24px;text-align:center">\u9084\u6c92\u6709\u932f\u984c\u3002\u53bb\u6e2c\u9a57\u5427\uff01\u7b54\u932f\u7684\u6703\u81ea\u52d5\u6536\u9032\u9019\u88e1 \ud83d\udcda</p>';
     return;
   }
+  h+='<p class="stat">同一題連續答對 '+W_NEED+' 次就自動移出錯題本（中途答錯會重新計算）</p>';
   h+='<div class="row">';
   h+='<button class="chip'+(wSub==="all"?" active":"")+'" onclick="wSetSub(\'all\')">\u5168\u90e8\uff08'+all.length+'\uff09</button>';
   Object.keys(UNITS).forEach(k=>{if(cnt[k])h+='<button class="chip'+(wSub===k?" active":"")+'" onclick="wSetSub(\''+k+'\')">'+esc(UNITS[k].icon+" "+UNITS[k].name)+'\uff08'+cnt[k]+'\uff09</button>';});
@@ -1665,6 +1686,7 @@ function renderWrong(){
          wUnitTag(r)+
          '<span class="topic">'+esc(r.sec||"")+(r.diff?"\u30fb"+esc(r.diff):"")+'</span>'+
          (r.src?'<span class="topic">'+esc(r.src)+'</span>':'')+
+         (r.hits?'<span class="topic" style="color:var(--ok);font-weight:800">連續答對 '+r.hits+'／'+W_NEED+'</span>':'')+
          '<span class="wt">'+esc(String(r.t).slice(0,10))+'</span></div>'+
          '<div class="wq">'+rep(r.qk,false)+'\u2026</div>'+
          '<div class="wa"><span class="wbad">\u4f60\u9078 '+rep(r.chosen,false)+'</span>'+
@@ -1837,7 +1859,7 @@ function pgLegacy(){
   const add=(o,k,ok,t)=>{const u=L[o.g+"|"+o.id]||(L[o.g+"|"+o.id]={q:{}}),r=u.q[k]||(u.q[k]=[0,0,"",""]);
     r[0]++;if(ok){r[1]++;if(t>r[3])r[3]=t;}if(t>r[2])r[2]=t;};
   const byRound={};
-  loadM().filter(r=>pgBefore(r.t)).forEach(r=>{
+  loadMAll().filter(r=>pgBefore(r.t)).forEach(r=>{
     const q=qFind(r),X=I[r.sub],h=q&&X&&X.byKey[qKey(q)];
     const rk=r.sub+"|"+(r.round||"");(byRound[rk]||(byRound[rk]=[])).push(q);
     if(!h)return;stat.mis++;add(h.o,qKey(q),false,String(r.t));});
